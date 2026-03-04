@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Networking Concepts</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="networking.html">Networking Concepts</a>
+    <a href="about.html">About</a>
+  </nav>
+  <div class="content">
+    <h1>Networking Concepts Demonstrated</h1>
+    <h2>DNS</h2>
+    <p>
+      Our domain is resolved to an IP address using DNS, when the domain is typed into a browser
+      the request will first go to a recursive DNS resolver, which then looks up the authoritative 
+      Github pages name servers. This results in an A record which relates to the IPv4 or in a AAAA
+      record which relates to the IPv6, returning the actual IP address of the server hosting the site.
+    </p>
+    <h2>IP Adressing</h2>
+    <p>
+      Our website supports both IPv4 and IPv6, showing that Github pages is configured for dual-stack
+      networking. This allows browsers and devices using either protocol to reach to the server.
+    </p>
+    <h2>Protocols</h2>
+    <p>
+      This website uses HTTPS for secure traffic and networking, if the user uses HTTP (without the S)
+      the server will automatically return a "301 moved permanently" code and redirect to HTTPS, enforcing
+      encrypted traffic.
+
+      The main page responds with a "200 OK" code once the HTTPS connection is established.
+
+      All request and response headers can be inspected using the browser developer tools, 
+    </p>
+</body>
