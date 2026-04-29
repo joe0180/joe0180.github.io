@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login Demo</title>
+  <link rel="stylesheet" href="style.min.css">
+</head>
+
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="networking.html">Networking Concepts</a>
+    <a href="about.html">About</a>
+  </nav>
+
+  <div class="content">
+    <h2>Login Demo (Security Feature)</h2>
+
+    <input type="text" id="username" placeholder="Username"><br><br>
+    <input type="password" id="password" placeholder="Password"><br><br>
+    <button onclick="login()">Login</button>
+
+    <p id="message"></p>
+  </div>
+
+  <script>
+    let attempts = 0;
+
+    function login() {
+      attempts++;
+
+      if (attempts > 3) {
+        document.getElementById("message").innerText =
+          "Too many attempts. Please try again later.";
+        return;
+      }
+
+      document.getElementById("message").innerText =
+        "Invalid credentials (Demo)";
+    }
+  </script>
+</body>
+</html>
