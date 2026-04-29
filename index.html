@@ -3,18 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <title>Networking Concepts Project</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.min.css">
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXX');
+  </script>
 </head>
+
 <body>
   <nav>
     <a href="index.html">Home</a>
     <a href="networking.html">Networking Concepts</a>
     <a href="about.html">About</a>
+    <a href="login.html">Login Demo</a>
   </nav>
+
   <div class="container">
-    <h1>Networking concepts in real deployment</h1>
-    <p class="subtitle">Demonstrating DNS, IP addressing, protocos, and security in a live environment</p>
-    <p>Developer: Joe Cai</p> 
+    <h1>Networking Concepts in Real Deployment</h1>
+    <p class="subtitle">
+      Demonstrating DNS, IP addressing, protocols, and security in a live environment
+    </p>
+    <p>Developer: John</p>
   </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+  <script>
+    const unsafeInput = "<img src=x onerror=alert('XSS Attack!')>";
+    const cleanInput = DOMPurify.sanitize(unsafeInput);
+    console.log("Sanitized Output:", cleanInput);
+  </script>
 </body>
 </html>
