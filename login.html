@@ -70,37 +70,22 @@
       }
     }
 
-    function login() {
-      const now = Date.now();
+    async function login() {
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
 
-      if (lockUntil > now) {
-        updateLockState();
-        return;
-      }
+      const res = await fetch("/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ username, password })
+    });
 
-      const username = usernameInput.value;
-      const password = passwordInput.value;
+    const data = await res.json();
 
-
-      if (username === "admin" && password === "password") {
-        message.innerText = "Login successful!";
-        localStorage.setItem("attempts", 0);
-        return;
-      }
-
-      attempts++;
-      localStorage.setItem("attempts", attempts);
-
-      if (attempts >= MAX_ATTEMPTS) {
-        lockUntil = now + LOCK_TIME;
-        localStorage.setItem("lockUntil", lockUntil);
-        updateLockState();
-      } else {
-        message.innerText =
-          "Invalid credentials. Attempts left: " +
-          (MAX_ATTEMPTS - attempts);
-      }
-    }
+    document.getElementById("message").innerText = data.message;
+  }
 
     updateLockState();
   </script>
