@@ -3,47 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <title>Networking Concepts</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
+  <link rel="stylesheet" href="style.min.css">
 
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXX');
+  </script>
+</head>
+
+<body>
   <nav>
     <a href="index.html">Home</a>
     <a href="networking.html">Networking Concepts</a>
     <a href="about.html">About</a>
+    <a href="login.html">Login Demo</a>
   </nav>
+
   <div class="content">
     <h1>Networking Concepts Demonstrated</h1>
+
     <h2>DNS</h2>
     <p>
-      Our domain is resolved to an IP address using DNS, when the domain is typed into a browser
-      the request will first go to a recursive DNS resolver, which then looks up the authoritative 
-      Github pages name servers. This results in an A record which relates to the IPv4 or in a AAAA
-      record which relates to the IPv6, returning the actual IP address of the server hosting the site.
+      The domain is resolved to an IP address using DNS. When a user enters the domain, the request is sent to a recursive DNS resolver, which queries the authoritative GitHub Pages name servers. This returns A (IPv4) or AAAA (IPv6) records containing the server IP.
     </p>
-    <h2>IP Adressing</h2>
+
+    <h2>IP Addressing</h2>
     <p>
-      Our website supports both IPv4 and IPv6, showing that Github pages is configured for dual-stack
-      networking. This allows browsers and devices using either protocol to reach to the server.
+      This website supports both IPv4 and IPv6, demonstrating dual-stack networking. This ensures compatibility across different devices and networks.
     </p>
+
     <h2>Protocols</h2>
     <p>
-      This website uses HTTPS for secure traffic and networking, if the user uses HTTP (without the S)
-      the server will automatically return a "307" code and redirect to HTTPS, enforcing
-      encrypted traffic.
-
-      The main page responds with a "200 OK" code once the HTTPS connection is established.
-
-      All request and response headers can be inspected using the browser developer tools, while Guthub pages
-      does not provide all custom security header by default, the HTPPS enforcement ensures that communication
-      is encrypted and secure from nalicious attacks.
+      The website uses HTTPS for secure communication. HTTP requests are automatically redirected (status 307) to HTTPS, enforcing encryption.
+      A successful request returns a "200 OK" response after the secure connection is established.
     </p>
+
+    <h2>Security</h2>
+    <p>
+      XSS protection is demonstrated using DOMPurify to sanitize unsafe input. HTTPS ensures encrypted communication between client and server.
+    </p>
+
     <h2>Summary</h2>
-    <p> 
-      In this project, networking concepts are applied directly. The DNS resolves our domain to IPs, dual-stack
-      IP addressing ensures compatibility across all devices and the HTTPS protocol with status codes demonstrate
-      secure and reliable communication. Inspecting header and observing redirects illustrates how client and server
-      in real deployments.
+    <p>
+      This project demonstrates real-world networking concepts including DNS resolution, IP addressing, and secure communication using HTTPS.
     </p>
+  </div>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
 </body>
 </html>
