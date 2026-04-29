@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Login Demo</title>
   <link rel="stylesheet" href="style.min.css">
 
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-DQ8ZTSENHT"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-DQ8ZTSENHT');
-</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DQ8ZTSENHT"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-DQ8ZTSENHT');
+  </script>
 </head>
 
 <body>
@@ -23,30 +23,86 @@
   </nav>
 
   <div class="content">
-    <h2>Login Demo (Security Feature)</h2>
+    <h2>Login Demo (Brute-Force Protection)</h2>
 
     <input type="text" id="username" placeholder="Username"><br><br>
     <input type="password" id="password" placeholder="Password"><br><br>
+
+
     <button onclick="login()">Login</button>
 
     <p id="message"></p>
   </div>
 
   <script>
-    let attempts = 0;
+    const MAX_ATTEMPTS = 3;
+    const LOCK_TIME = 5 * 60 * 1000; 
+
+    let attempts = parseInt(localStorage.getItem("attempts")) || 0;
+    let lockUntil = parseInt(localStorage.getItem("lockUntil")) || 0;
+
+    const usernameInput = document.getElementById("username");
+    const passwordInput = document.getElementById("password");
+    const message = document.getElementById("message");
+
+    function updateLockState() {
+      const now = Date.now();
+
+      if (lockUntil > now) {
+        const remaining = Math.ceil((lockUntil - now) / 1000);
+
+        usernameInput.disabled = true;
+        passwordInput.disabled = true;
+
+        message.innerText =
+          "Too many attempts. Try again in " + remaining + " seconds.";
+
+        setTimeout(updateLockState, 1000);
+      } else {
+        usernameInput.disabled = false;
+        passwordInput.disabled = false;
+
+        message.innerText = "";
+
+        localStorage.removeItem("lockUntil");
+        localStorage.setItem("attempts", 0);
+        attempts = 0;
+      }
+    }
 
     function login() {
-      attempts++;
+      const now = Date.now();
 
-      if (attempts > 3) {
-        document.getElementById("message").innerText =
-          "Too many attempts. Please try again later.";
+      if (lockUntil > now) {
+        updateLockState();
         return;
       }
 
-      document.getElementById("message").innerText =
-        "Invalid credentials (Demo)";
+      const username = usernameInput.value;
+      const password = passwordInput.value;
+
+
+      if (username === "admin" && password === "password") {
+        message.innerText = "Login successful!";
+        localStorage.setItem("attempts", 0);
+        return;
+      }
+
+      attempts++;
+      localStorage.setItem("attempts", attempts);
+
+      if (attempts >= MAX_ATTEMPTS) {
+        lockUntil = now + LOCK_TIME;
+        localStorage.setItem("lockUntil", lockUntil);
+        updateLockState();
+      } else {
+        message.innerText =
+          "Invalid credentials. Attempts left: " +
+          (MAX_ATTEMPTS - attempts);
+      }
     }
+
+    updateLockState();
   </script>
 </body>
 </html>
