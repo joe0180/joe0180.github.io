@@ -5,8 +5,8 @@
   <title>Login Demo</title>
   <link rel="stylesheet" href="style.min.css">
 
-
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DQ8ZTSENHT"></script>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DQ8ZTSENHTX"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
@@ -23,11 +23,10 @@
   </nav>
 
   <div class="content">
-    <h2>Login Demo (Brute-Force Protection)</h2>
+    <h2>Login Demo (Server-Side Protection)</h2>
 
     <input type="text" id="username" placeholder="Username"><br><br>
     <input type="password" id="password" placeholder="Password"><br><br>
-
 
     <button onclick="login()">Login</button>
 
@@ -35,59 +34,29 @@
   </div>
 
   <script>
-    const MAX_ATTEMPTS = 3;
-    const LOCK_TIME = 5 * 60 * 1000; 
-
-    let attempts = parseInt(localStorage.getItem("attempts")) || 0;
-    let lockUntil = parseInt(localStorage.getItem("lockUntil")) || 0;
-
-    const usernameInput = document.getElementById("username");
-    const passwordInput = document.getElementById("password");
-    const message = document.getElementById("message");
-
-    function updateLockState() {
-      const now = Date.now();
-
-      if (lockUntil > now) {
-        const remaining = Math.ceil((lockUntil - now) / 1000);
-
-        usernameInput.disabled = true;
-        passwordInput.disabled = true;
-
-        message.innerText =
-          "Too many attempts. Try again in " + remaining + " seconds.";
-
-        setTimeout(updateLockState, 1000);
-      } else {
-        usernameInput.disabled = false;
-        passwordInput.disabled = false;
-
-        message.innerText = "";
-
-        localStorage.removeItem("lockUntil");
-        localStorage.setItem("attempts", 0);
-        attempts = 0;
-      }
-    }
-
     async function login() {
       const username = document.getElementById("username").value;
       const password = document.getElementById("password").value;
 
-      const res = await fetch("/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ username, password })
-    });
+      try {
+        const res = await fetch("/api/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ username, password })
+        });
 
-    const data = await res.json();
+        const data = await res.json();
 
-    document.getElementById("message").innerText = data.message;
-  }
+        document.getElementById("message").innerText = data.message;
 
-    updateLockState();
+      } catch (error) {
+        console.error(error);
+        document.getElementById("message").innerText =
+          "Error connecting to server.";
+      }
+    }
   </script>
 </body>
 </html>
