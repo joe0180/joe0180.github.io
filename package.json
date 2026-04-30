@@ -1,7 +1,8 @@
 {
-  "name": "login-project",
+  "name": "secure-login-project",
   "version": "1.0.0",
+  "description": "Secure login system with rate limiting and monitoring on Vercel",
   "dependencies": {
-    "@upstash/redis": "^1.0.0"
+    "@vercel/kv": "^3.0.0"
   }
 }
