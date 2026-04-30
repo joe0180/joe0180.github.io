@@ -26,7 +26,6 @@ export default async function handler(req, res) {
 
     const now = Date.now();
 
-    // 🔒 BLOCK IF LOCKED
     if (record.lockUntil > now) {
       const remaining = Math.ceil((record.lockUntil - now) / 1000);
 
