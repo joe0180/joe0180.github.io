@@ -1,7 +1,7 @@
 import { kv } from "@vercel/kv";
 
 const MAX_ATTEMPTS = 3;
-const LOCK_TIME = 300; 
+const LOCK_TIME_MS = 5 * 60 * 1000; 
 
 export default async function handler(req, res) {
   try {
@@ -10,7 +10,9 @@ export default async function handler(req, res) {
     }
 
     const ip =
-      req.headers["x-forwarded-for"] ||
+      (req.headers["x-forwarded-for"] || "")
+        .split(",")[0]
+        .trim() ||
       req.socket?.remoteAddress ||
       "unknown";
 
@@ -24,16 +26,21 @@ export default async function handler(req, res) {
 
     const now = Date.now();
 
+    // 🔒 BLOCK IF LOCKED
     if (record.lockUntil > now) {
       const remaining = Math.ceil((record.lockUntil - now) / 1000);
+
       return res.status(429).json({
         success: false,
-        message: `Locked. Try again in ${remaining}s`
+        message: `Too many attempts. Try again in ${remaining}s`
       });
     }
 
-    const body = req.body;
-    const { username, password } = body;
+
+    const body =
+      typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+
+    const { username, password } = body || {};
 
 
     if (username === "admin" && password === "password") {
@@ -44,17 +51,17 @@ export default async function handler(req, res) {
         "session=valid; HttpOnly; Secure; SameSite=Strict; Path=/"
       );
 
-      return res.json({
+      return res.status(200).json({
         success: true,
         message: "Login successful"
       });
     }
 
 
-    record.count++;
+    record.count += 1;
 
     if (record.count >= MAX_ATTEMPTS) {
-      record.lockUntil = now + LOCK_TIME * 1000;
+      record.lockUntil = now + LOCK_TIME_MS;
     }
 
     await kv.set(key, record);
@@ -63,12 +70,12 @@ export default async function handler(req, res) {
       success: false,
       message:
         record.count >= MAX_ATTEMPTS
-          ? "Locked out"
+          ? "Too many attempts. You are locked out for 5 minutes."
           : `Attempts left: ${MAX_ATTEMPTS - record.count}`
     });
 
   } catch (err) {
-    console.error(err);
+    console.error("LOGIN ERROR:", err);
 
     return res.status(500).json({
       success: false,
