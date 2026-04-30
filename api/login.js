@@ -1,14 +1,9 @@
-const { Redis } = require("@upstash/redis");
-
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
+import { kv } from "@vercel/kv";
 
 const MAX_ATTEMPTS = 3;
-const LOCK_TIME = 300000;
+const LOCK_TIME = 300; 
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   try {
     if (req.method !== "POST") {
       return res.status(405).json({ message: "Method not allowed" });
@@ -21,7 +16,7 @@ module.exports = async (req, res) => {
 
     const key = `login:${ip}`;
 
-    let record = await redis.get(key);
+    let record = await kv.get(key);
 
     if (!record) {
       record = { count: 0, lockUntil: 0 };
@@ -30,29 +25,26 @@ module.exports = async (req, res) => {
     const now = Date.now();
 
     if (record.lockUntil > now) {
+      const remaining = Math.ceil((record.lockUntil - now) / 1000);
       return res.status(429).json({
         success: false,
-        message: "Too many attempts. Try again later."
+        message: `Locked. Try again in ${remaining}s`
       });
     }
 
-    const body =
-      typeof req.body === "string"
-        ? JSON.parse(req.body)
-        : req.body;
-
-    const { username, password } = body || {};
+    const body = req.body;
+    const { username, password } = body;
 
 
     if (username === "admin" && password === "password") {
-      await redis.set(key, { count: 0, lockUntil: 0 });
+      await kv.set(key, { count: 0, lockUntil: 0 });
 
       res.setHeader(
         "Set-Cookie",
         "session=valid; HttpOnly; Secure; SameSite=Strict; Path=/"
       );
 
-      return res.status(200).json({
+      return res.json({
         success: true,
         message: "Login successful"
       });
@@ -62,10 +54,10 @@ module.exports = async (req, res) => {
     record.count++;
 
     if (record.count >= MAX_ATTEMPTS) {
-      record.lockUntil = now + LOCK_TIME;
+      record.lockUntil = now + LOCK_TIME * 1000;
     }
 
-    await redis.set(key, record);
+    await kv.set(key, record);
 
     return res.status(401).json({
       success: false,
@@ -76,11 +68,11 @@ module.exports = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("LOGIN ERROR:", err);
+    console.error(err);
 
     return res.status(500).json({
       success: false,
       message: "Server error"
     });
   }
-};
+}
